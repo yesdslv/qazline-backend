@@ -2,7 +2,6 @@ import os # noqa
 from pathlib import Path
 import logging.config
 
-from dotenv import load_dotenv
 
 # Load environment variables
 # env_file_path = Path(__file__).absolute().parents[3].joinpath('deploy/.my_env')
