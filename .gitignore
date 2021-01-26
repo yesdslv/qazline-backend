@@ -5,6 +5,8 @@ venv
 
 .coverage
 
+test_media/
+
 __pycache__/
 *.py[cod]
 
