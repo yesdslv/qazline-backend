@@ -1,12 +1,6 @@
 import os # noqa
-from pathlib import Path
 import logging.config
 
-
-# Load environment variables
-# env_file_path = Path(__file__).absolute().parents[3].joinpath('deploy/.my_env')
-# print(env_file_path)
-# load_dotenv(env_file_path, verbose=True)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -35,12 +29,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    # 'djoser',
-    'oauth2_provider',
-    'social_django',
-    'rest_framework_social_oauth2',
-    # 'rest_framework_simplejwt',
-    # 'sample.apps.SampleConfig',
     'qazline.apps.QazlineConfig',
 ]
 
@@ -57,8 +45,6 @@ MIDDLEWARE = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
-        'rest_framework_social_oauth2.authentication.SocialAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
 }
@@ -76,9 +62,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                # OAuth
-                'social_django.context_processors.backends',
-                'social_django.context_processors.login_redirect',
             ],
         },
     },
