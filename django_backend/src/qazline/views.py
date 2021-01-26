@@ -87,11 +87,3 @@ class TaskRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     serializer_class = TaskSerializer
 
 
-class HelloView(APIView):
-    def get(self, request, format=None):
-        return Response('Hello from django!')
-
-
-class VideoView(TemplateView):
-    template_name = 'qazline/video.html'
-
