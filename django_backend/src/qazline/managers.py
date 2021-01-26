@@ -1,7 +1,4 @@
 from django.contrib.auth.base_user import BaseUserManager
-from django.db import models
-
-# from qazline.models import Video, Image, Assignment
 
 
 class QazlineUserManager(BaseUserManager):

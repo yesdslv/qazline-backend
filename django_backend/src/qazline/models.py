@@ -1,12 +1,11 @@
-from functools import wraps
 from datetime import datetime
+from functools import wraps
 
-
-from django.db import models, IntegrityError
 from django.apps import apps
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.core.files.storage import FileSystemStorage
 from django.core.validators import validate_image_file_extension, ValidationError
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.db import models, IntegrityError
 
 from qazline.managers import QazlineUserManager
 from qazline.validators import JSONSchemaValidator, ANSWER_JSON_FIELD_SCHEMA

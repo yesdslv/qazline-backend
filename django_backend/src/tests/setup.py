@@ -1,11 +1,19 @@
-from rest_framework.test import APITestCase
+import shutil
+
+from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import override_settings
+from rest_framework.test import APITestCase
 
 from qazline.models import (
     Lesson, Subject, AssignmentMaterial, VideoMaterial, ImageMaterial, Image, QuizMaterial, Task,
 )
 
+BASE_DIR = settings.BASE_DIR
+MEDIA_ROOT = f'{BASE_DIR}/test_media'
 
+
+@override_settings(MEDIA_ROOT=MEDIA_ROOT)
 class TestViewSetUp(APITestCase):
 
     def setUp(self):
@@ -38,6 +46,11 @@ class TestViewSetUp(APITestCase):
             ],
             quiz_material=quiz_material,
         )
+
+    def tearDown(self):
+        super().tearDown()
+        shutil.rmtree(MEDIA_ROOT)
+
 
     @classmethod
     def get_last_subject_number(cls) -> int:

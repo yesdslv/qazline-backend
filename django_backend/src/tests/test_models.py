@@ -1,13 +1,13 @@
+from django.core.exceptions import ValidationError
+from django.core.files import File
+from django.db import IntegrityError
+from django.test.utils import override_settings
 from mock import Mock
 
-from django.db import IntegrityError
-from django.core.files import File
-from django.core.exceptions import ValidationError
-
-from tests.setup import TestModelSetUp
 from qazline.models import (
     Subject, VideoMaterial, ImageMaterial, AssignmentMaterial, QuizMaterial, Image, Task
 )
+from tests.setup import TestModelSetUp
 
 
 class ModelsTest(TestModelSetUp):
@@ -30,6 +30,7 @@ class ModelsTest(TestModelSetUp):
         with self.assertRaises(Subject.DoesNotExist):
             Subject.objects.get(title='deleted subject title')
 
+    @override_settings(DEBUG=True)
     def test_create_fill_the_blank_task(self):
         last_subject_number = Subject.objects.order_by('-number').first().number + 1
         subject = Subject.objects.create(number=last_subject_number, title='task title')

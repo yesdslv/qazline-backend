@@ -1,5 +1,6 @@
 from django.urls import path
 from rest_framework import routers
+
 #
 from qazline.views import (
     # LessonViewSet, SubjectViewSet, VideoViewSet, ImageViewSet, AssignmentViewSet,
@@ -14,8 +15,8 @@ from qazline.views import (
     QuizMaterialViewSet,
     ImageDeleteView,
     TaskRetrieveUpdateDestroyView,
-    HelloView,
 )
+
 #
 #
 router = routers.SimpleRouter()
@@ -31,5 +32,4 @@ urlpatterns = [
     path('tasks/<int:pk>/', TaskRetrieveUpdateDestroyView.as_view(), name='task-detail'),
     path('subjects/', SubjectListView.as_view(), name='subject-list'),
     path('subjects/<int:pk>/', SubjectMaterialDetailView.as_view(), name='subject-material-detail'),
-    path('django/', HelloView.as_view(), name='hello-view'),
 ] + router.urls

@@ -2,17 +2,17 @@ import json
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework.reverse import reverse
-from rest_framework.test import APIRequestFactory
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
+from rest_framework.test import APIRequestFactory
 
-from tests.setup import TestViewSetUp
+from qazline.models import (
+    Subject, VideoMaterial, AssignmentMaterial, Lesson, ImageMaterial, QuizMaterial, Task,
+)
 from qazline.views import (
     VideoMaterialViewSet, AssignmentMaterialViewSet, SubjectMaterialDetailView, SubjectListView,
     ImageMaterialViewSet, QuizMaterialViewSet,
 )
-from qazline.models import (
-    Subject, VideoMaterial, AssignmentMaterial, Lesson, ImageMaterial, QuizMaterial, Task,
-)
+from tests.setup import TestViewSetUp
 
 
 class ViewsTest(TestViewSetUp):
