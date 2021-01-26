@@ -59,7 +59,7 @@ class QazlineUser(AbstractBaseUser, PermissionsMixin):
     objects = QazlineUserManager()
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        return f'{self.first_name} {self.last_name}'  # pragma: no cover
 
 
 class Lesson(models.Model):
@@ -67,7 +67,7 @@ class Lesson(models.Model):
     title = models.CharField(max_length=50)
 
     def __str__(self):
-        return f'#{self.number}: {self.title}'
+        return f'#{self.number}: {self.title}'  # pragma: no cover
 
 
 class Subject(models.Model):
