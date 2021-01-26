@@ -5,4 +5,4 @@ class QazlineConfig(AppConfig):
     name = 'qazline'
 
     def ready(self):
-        import django_backend.src.qazline.signals  # noqa
+        import qazline.signals  # noqa

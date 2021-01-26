@@ -1,7 +1,7 @@
 from rest_framework.test import APITestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from django_backend.src.qazline.models import (
+from qazline.models import (
     Lesson, Subject, AssignmentMaterial, VideoMaterial, ImageMaterial, Image, QuizMaterial, Task,
 )
 

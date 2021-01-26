@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from django_backend.src.qazline.models import QazlineUser
+from qazline.models import QazlineUser
 
 
 class QazlineUserAdmin(UserAdmin):

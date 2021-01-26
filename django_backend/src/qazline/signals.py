@@ -4,7 +4,7 @@ from django.db.models.signals import post_delete, pre_save
 from django.dispatch import receiver
 from django.core.validators import ValidationError
 
-from django_backend.src.qazline.models import VideoMaterial, ImageMaterial, AssignmentMaterial, QuizMaterial, Image, Task
+from qazline.models import VideoMaterial, ImageMaterial, AssignmentMaterial, QuizMaterial, Image, Task
 
 FILL_THE_BLANK_SPECIAL_CHARS = '_____'
 

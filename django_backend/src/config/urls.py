@@ -10,7 +10,7 @@ from django.conf import settings
 #     TokenRefreshView,
 # )
 
-from django_backend.src.qazline import urls as qazline_urls
+from qazline import urls as qazline_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),

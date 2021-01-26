@@ -10,7 +10,7 @@ from qazline.views import (
     VideoMaterialViewSet, AssignmentMaterialViewSet, SubjectMaterialDetailView, SubjectListView,
     ImageMaterialViewSet, QuizMaterialViewSet,
 )
-from django_backend.src.qazline.models import (
+from qazline.models import (
     Subject, VideoMaterial, AssignmentMaterial, Lesson, ImageMaterial, QuizMaterial, Task,
 )
 

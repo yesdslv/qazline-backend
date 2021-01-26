@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 
-from django_backend.src.qazline.models import (
+from qazline.models import (
     Lesson, Subject, Material, VideoMaterial, AssignmentMaterial, ImageMaterial, Image, QuizMaterial, Task,
 )
 
