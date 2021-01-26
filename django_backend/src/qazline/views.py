@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import NotFound
 from rest_framework.generics import ListAPIView, DestroyAPIView, RetrieveDestroyAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.viewsets import ModelViewSet
 
@@ -31,7 +32,7 @@ class SubjectMaterialDetailView(RetrieveDestroyAPIView):
         elif instance.has_quiz_material():
             obj = instance.quizmaterial
         else:
-            raise Exception
+            raise NotFound('Subject without material')
         return obj
 
     def get_serializer_class(self):
@@ -45,7 +46,7 @@ class SubjectMaterialDetailView(RetrieveDestroyAPIView):
         elif instance.has_quiz_material:
             serializer = QuizMaterialSerializer
         else:
-            raise Exception
+            raise NotFound('Subject without material')
         return serializer
 
 
