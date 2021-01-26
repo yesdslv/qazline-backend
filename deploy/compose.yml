@@ -7,6 +7,9 @@ services:
     restart: 'no'
     env_file: .env
     volumes:
-      - /docker_volumes/qazline/pgdata:/var/lib/postgresql/data
+      - qazline-db:/var/lib/postgresql/data
     ports:
       - '127.0.0.1:15432:5432'
+
+volumes:
+  qazline-db:
