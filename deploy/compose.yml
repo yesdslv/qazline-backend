@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  qazline-postgres:
+    image: postgres:13.1-alpine
+    container_name: qazline_postgres
+    restart: 'no'
+    env_file: .env
+    volumes:
+      - /docker_volumes/qazline/pgdata:/var/lib/postgresql/data
+    ports:
+      - '127.0.0.1:15432:5432'
