@@ -49,17 +49,7 @@ class MaterialSerializer(serializers.ModelSerializer):
         validated_data['subject'] = subject
 
     def update(self, instance, validated_data):
-        subject_title = validated_data.pop('subject_title', None)
-        subject_number = validated_data.pop('subject_number', None)
-        lesson_id = validated_data.pop('lesson', None)
-        subject = instance.subject
-        if subject_number:
-            subject.number = subject_number
-        if subject_title:
-            subject.title = subject_title
-        if lesson_id:
-            subject.lesson_id = lesson_id
-        subject.save()
+        self._update_subject(instance, validated_data)
         instance = super().update(instance, validated_data)
         return instance
 
@@ -67,6 +57,22 @@ class MaterialSerializer(serializers.ModelSerializer):
         if not Lesson.objects.filter(pk=value).exists():
             raise serializers.ValidationError(f'Cannot create material, cause lesson with pk: {value} does not exist')
         return value
+
+    @staticmethod
+    def _update_subject(instance, validated_data):
+        subject_title = validated_data.pop('subject_title', None)
+        subject_number = validated_data.pop('subject_number', None)
+        lesson_id = validated_data.pop('lesson', None)
+        subject = instance.subject
+        if subject_number:
+            subject.number = subject_number
+            subject.save(update_fields=['number'])
+        if subject_title:
+            subject.title = subject_title
+            subject.save(update_fields=['title'])
+        if lesson_id:
+            subject.lesson_id = lesson_id
+            subject.save(update_fields=['lesson_id'])
 
 
 class VideoMaterialSerializer(MaterialSerializer):
@@ -108,28 +114,25 @@ class ImageMaterialSerializer(MaterialSerializer):
         images = validated_data.pop('images')
         descriptions = validated_data.pop('descriptions')
         instance = ImageMaterial.objects.create(**validated_data)
-        self._save_image(images, descriptions, instance)
+        self._save_images(images, descriptions, instance)
         return instance
 
     def update(self, instance, validated_data):
         images = validated_data.pop('images', None)
         descriptions = validated_data.pop('descriptions', None)
-        self._save_image(images, descriptions, instance)
+        self._save_images(images, descriptions, instance)
         instance = super().update(instance, validated_data)
         return instance
 
     def validate(self, attrs):
-        # TODO review this part
+        attrs = super().validate(attrs)
+        images = attrs.get('images', None)
+        descriptions = attrs.get('descriptions', None)
         if not self.partial:
-            attrs = super().validate(attrs)
-            images = attrs.get('images', None)
-            descriptions = attrs.get('descriptions', None)
-            if not images:
-                raise serializers.ValidationError('Images are not provided')
-            if not descriptions:
-                raise serializers.ValidationError('Descriptions are not provided')
-            if len(images) != len(descriptions):
-                raise serializers.ValidationError('Number of images must be the same as number of image descriptions')
+            self._check_images_and_description(images, descriptions)
+        else:
+            if images or descriptions:
+                self._check_images_and_description(images, descriptions)
         return attrs
 
     def to_representation(self, instance):
@@ -137,10 +140,19 @@ class ImageMaterialSerializer(MaterialSerializer):
         return super().to_representation(instance)
 
     @staticmethod
-    def _save_image(images, descriptions, instance):
+    def _save_images(images, descriptions, instance):
         if images and descriptions:
             for image, description in zip(images, descriptions):
                 Image.objects.create(image=image, description=description, image_material=instance)
+
+    @staticmethod
+    def _check_images_and_description(images, descriptions):
+        if not images:
+            raise serializers.ValidationError('Images are not provided')
+        if not descriptions:
+            raise serializers.ValidationError('Descriptions are not provided')
+        if len(images) != len(descriptions):
+            raise serializers.ValidationError('Number of images must be the same as number of image descriptions')
 
 
 class AssignmentMaterialSerializer(MaterialSerializer):
@@ -174,25 +186,21 @@ class QuizMaterialSerializer(MaterialSerializer):
         super().create(validated_data)
         tasks = validated_data.pop('tasks')
         instance = QuizMaterial.objects.create(**validated_data)
-        for task in tasks:
-            self._create_task(task, instance)
+        self._create_tasks(tasks, instance)
         return instance
 
     def update(self, instance, validated_data):
         tasks = validated_data.pop('tasks', None)
         if tasks:
-            for task in tasks:
-                self._create_task(task, instance)
+            self._create_tasks(tasks, instance)
         instance = super().update(instance, validated_data)
         return instance
 
     @staticmethod
-    def _create_task(task, quiz_material_instance):
-        question = task['question']
-        answers = task['answers']
-        instance = Task.objects.create(
-            question=question, answers=answers, quiz_material=quiz_material_instance
-        )
-        instance.save()
-
-
+    def _create_tasks(tasks, quiz_material_instance):
+        for task in tasks:
+            question = task['question']
+            answers = task['answers']
+            Task.objects.create(
+                question=question, answers=answers, quiz_material=quiz_material_instance
+            )
