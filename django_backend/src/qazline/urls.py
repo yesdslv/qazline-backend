@@ -31,5 +31,8 @@ urlpatterns = [
     path('images/<int:pk>/', ImageDeleteView.as_view(), name='image-delete'),
     path('tasks/<int:pk>/', TaskRetrieveUpdateDestroyView.as_view(), name='task-detail'),
     path('subjects/', SubjectListView.as_view(), name='subject-list'),
-    path('subjects/<int:pk>/', SubjectMaterialDetailView.as_view(), name='subject-material-detail'),
+    path(
+        'lessons/<int:lesson_number>/subjects/<int:subject_number>/',
+        SubjectMaterialDetailView.as_view(), name='subject-material-detail'
+    ),
 ] + router.urls

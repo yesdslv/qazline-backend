@@ -20,9 +20,14 @@ class LessonViewSet(ModelViewSet):
 
 
 class SubjectMaterialDetailView(RetrieveDestroyAPIView):
+    # TODO refactor, maybe add get_queryset method, cause get_object have permission check
 
     def get_object(self):
-        instance = get_object_or_404(Subject, pk=self.kwargs['pk'])
+        instance = get_object_or_404(
+            Subject,
+            lesson__number=self.kwargs['lesson_number'],
+            number=self.kwargs['subject_number'],
+        )
         if instance.has_video_material():
             obj = instance.videomaterial
         elif instance.has_image_material():
@@ -33,10 +38,16 @@ class SubjectMaterialDetailView(RetrieveDestroyAPIView):
             obj = instance.quizmaterial
         else:
             raise NotFound('Subject without material')
+        self.check_object_permissions(self.request, obj)
         return obj
 
     def get_serializer_class(self):
-        instance = get_object_or_404(Subject, pk=self.kwargs['pk'])
+        # TODO override get_serializer instead of get_serializer_class
+        instance = get_object_or_404(
+            Subject,
+            lesson__number=self.kwargs['lesson_number'],
+            number=self.kwargs['subject_number'],
+        )
         if instance.has_video_material():
             serializer = VideoMaterialSerializer
         elif instance.has_image_material():
@@ -83,5 +94,3 @@ class QuizMaterialViewSet(ModelViewSet):
 class TaskRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-
-
