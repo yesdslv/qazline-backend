@@ -97,6 +97,7 @@ class Subject(models.Model):
 class Material(models.Model):
     subject = models.OneToOneField(Subject, on_delete=models.CASCADE, primary_key=True)
     topic = models.CharField(blank=True, max_length=255)
+    objects = models.Manager()
 
     class Meta:
         abstract = True
@@ -118,6 +119,7 @@ class Image(models.Model):
     image_material = models.ForeignKey(ImageMaterial, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(validators=[validate_image_file_extension], upload_to=get_path_for_image)
     description = models.CharField(blank=True, max_length=255)
+    objects = models.Manager()
 
 
 class AssignmentMaterial(Material):
@@ -142,6 +144,7 @@ class Task(models.Model):
 
     ])
     task_type = models.CharField(max_length=2, choices=TaskType.choices, default=TaskType.SINGLE_ANSWER)
+    objects = models.Manager()
 
     def save(self, *args, **kwargs):
         task_type = kwargs.get('task_type')
