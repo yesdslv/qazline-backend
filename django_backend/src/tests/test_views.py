@@ -2,7 +2,6 @@ import json
 from collections import OrderedDict
 
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test.utils import override_settings
 from rest_framework.reverse import reverse
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
 from rest_framework.test import APIRequestFactory
@@ -121,23 +120,6 @@ class ViewsTest(TestViewSetUp):
 
     request_factory = APIRequestFactory()
 
-    # def test_lesson_list_return_correct_response(self):
-    #     lesson_url = reverse('lesson-list')
-    #     request = self.request_factory.get(lesson_url)
-    #     view = LessonViewSet.as_view({'get': 'list'})
-    #     response = view(request)
-    #     expected_response_json = json.dumps([{
-    #         'number': 1,
-    #         'title': 'Sample lesson #1',
-    #         'subjects': [
-    #             {'number': 1, 'title': 'Assignment subject'},
-    #             {'number': 2, 'title': 'Video subject'}
-    #         ]
-    #     }])
-    #     expected_response_json = expected_response_json.encode('utf-8')
-    #     response.render()
-    #     self.assertEqual(response.content, expected_response_json)
-
     def test_video_view_creates_video_material(self):
         subject_title = 'Video subject'
         subject_number = self.get_last_subject_number()
@@ -155,14 +137,8 @@ class ViewsTest(TestViewSetUp):
         request = self.request_factory.post(video_url, video_json, content_type='application/json')
         view = VideoMaterialViewSet.as_view({'post': 'create'})
         response = view(request)
-        try:
-            video = VideoMaterial.objects.get(url=url, topic=topic)
-        except VideoMaterial.DoesNotExist:
-            video = None
-        if video:
-            subject = video.subject
-        else:
-            subject = None
+        video = VideoMaterial.objects.get(url=url, topic=topic)
+        subject = video.subject
         self.assertEqual(response.status_code, HTTP_201_CREATED, msg='Video is not posted')
         self.assertIsNotNone(subject, msg='Subject is not created')
 
@@ -192,9 +168,10 @@ class ViewsTest(TestViewSetUp):
         video_url = reverse('video-material-detail', kwargs={'pk': pk})
         request = self.request_factory.patch(video_url, request_json, content_type='application/json')
         view = VideoMaterialViewSet.as_view({'patch': 'partial_update'})
-        view(request, pk=pk)
+        response = view(request, pk=pk)
         video.refresh_from_db()
         self.assertEqual(video.url, new_video_url)
+        self.assertEqual(response.status_code, HTTP_200_OK)
 
     def test_video_updates_subject_lesson_of_video_material(self):
         video = VideoMaterial.objects.get(url='http://sample_video.com')
@@ -228,7 +205,7 @@ class ViewsTest(TestViewSetUp):
             'subject_number': subject_number,
             'topic': topic,
             'images': image,
-            'descriptions': image_description
+            'descriptions': image_description,
         }
         image_url = reverse('image-material-list')
         request = self.request_factory.post(image_url, request_dict, format='multipart')
@@ -299,8 +276,8 @@ class ViewsTest(TestViewSetUp):
         view = ImageMaterialViewSet.as_view({'patch': 'partial_update'})
         response = view(request, pk=pk)
         subject = image_material.subject
-        self.assertEqual(response.status_code, HTTP_200_OK)
         self.assertEqual(subject.title, patched_subject_title)
+        self.assertEqual(response.status_code, HTTP_200_OK)
 
     def test_assignment_view_creates_assignment_material(self):
         subject_title = 'Assignment subject'
@@ -392,10 +369,10 @@ class ViewsTest(TestViewSetUp):
         request = self.request_factory.post(quiz_url, request_json, content_type='application/json')
         view = QuizMaterialViewSet.as_view({'post': 'create'})
         response = view(request)
-        self.assertEqual(response.status_code, HTTP_201_CREATED)
         single_choice_task_instance = Task.objects.get(question='single choice task')
         multiple_choice_task_instance = Task.objects.get(question='multiple choice task')
         fill_the_blank_task_instance = Task.objects.get(question='fill the blank task _____')
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
         self.assertEqual(single_choice_task_instance.task_type, Task.TaskType.SINGLE_ANSWER)
         self.assertEqual(multiple_choice_task_instance.task_type, Task.TaskType.MULTIPLE_ANSWERS)
         self.assertEqual(fill_the_blank_task_instance.task_type, Task.TaskType.FILL_IN_THE_BLANK)
@@ -469,7 +446,7 @@ class ViewsTest(TestViewSetUp):
                 # {'aaaa': 'first', 'correct': True},
                 # {'aaaa': 'second', 'correct': False},
                 {'answer_text': 'third', 'correct': False},
-                {'answer_text': 'fourth' , 'correct': True, 'SSS': 'SSS'}
+                {'answer_text': 'fourth', 'correct': True, 'SSS': 'SSS'}
             ],
         }
         quiz_dict['tasks'].append(single_choice_task)
