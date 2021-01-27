@@ -2,6 +2,7 @@ import json
 from collections import OrderedDict
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import override_settings
 from rest_framework.reverse import reverse
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
 from rest_framework.test import APIRequestFactory
@@ -16,17 +17,9 @@ from qazline.views import (
 from tests.setup import TestViewSetUp
 
 
-class SubjectMaterialDetailViewTest(TestViewSetUp):
+class SubjectMaterialViewsTest(TestViewSetUp):
 
     request_factory = APIRequestFactory()
-
-    def test_subject_detail_view_returns_200_response(self):
-        subject = Subject.objects.get(title='Assignment subject')
-        subject_url = reverse('subject-material-detail', kwargs={'pk': subject.pk})
-        request = self.request_factory.get(subject_url)
-        view = SubjectListView.as_view()
-        response = view(request, pk=subject.pk)
-        self.assertEqual(response.status_code, HTTP_200_OK)
 
     def test_subject_list_view_return_200_response(self):
         subject_url = reverse('subject-list')
@@ -35,34 +28,58 @@ class SubjectMaterialDetailViewTest(TestViewSetUp):
         response = view(request)
         self.assertEqual(response.status_code, HTTP_200_OK)
 
+    def test_subject_detail_view_returns_200_response(self):
+        subject = Subject.objects.select_related('lesson').get(title='Assignment subject')
+        subject_number = subject.number
+        lesson_number = subject.lesson.number
+        subject_url = reverse(
+            'subject-material-detail',
+            kwargs={'subject_number': subject_number, 'lesson_number': lesson_number}
+        )
+        request = self.request_factory.get(subject_url)
+        view = SubjectListView.as_view()
+        response = view(request, subject_number=subject_number, lesson_number=lesson_number)
+        self.assertEqual(response.status_code, HTTP_200_OK)
+
     def test_subject_detail_view_not_found_response(self):
-        pk = 9999999999999999999
-        subject_url = reverse('subject-material-detail', kwargs={'pk': pk})
+        number = 9999999999999999999
+        subject_url = reverse(
+            'subject-material-detail',
+            kwargs={'subject_number': number, 'lesson_number': number}
+        )
         request = self.request_factory.get(subject_url)
         view = SubjectMaterialDetailView.as_view()
-        response = view(request, pk=pk)
+        response = view(request, subject_number=number, lesson_number=number)
         self.assertEqual(response.status_code, HTTP_404_NOT_FOUND)
 
     def test_subject_detail_view_returns_videomaterial_response(self):
-        video = VideoMaterial.objects.first()
-        subject = video.subject
-        subject_url = reverse('subject-material-detail', kwargs={'pk': subject.pk})
+        video_material = VideoMaterial.objects.select_related('subject', 'subject__lesson').first()
+        subject_number = video_material.subject.number
+        lesson_number = video_material.subject.lesson.number
+        subject_url = reverse(
+            'subject-material-detail',
+            kwargs={'subject_number': subject_number, 'lesson_number': lesson_number}
+        )
         request = self.request_factory.get(subject_url)
         view = SubjectMaterialDetailView.as_view()
-        response = view(request, pk=subject.pk)
+        response = view(request, subject_number=subject_number, lesson_number=lesson_number)
         expected_response = {
-            'topic': video.topic,
-            'url': video.url
+            'topic': video_material.topic,
+            'url': video_material.url
         }
         self.assertEqual(response.data, expected_response)
 
     def test_subject_detail_view_returns_imagematerial_response(self):
-        image_material = ImageMaterial.objects.first()
-        subject = image_material.subject
-        subject_url = reverse('subject-material-detail', kwargs={'pk': subject.pk})
+        image_material = ImageMaterial.objects.select_related('subject', 'subject__lesson').first()
+        subject_number = image_material.subject.number
+        lesson_number = image_material.subject.lesson.number
+        subject_url = reverse(
+            'subject-material-detail',
+            kwargs={'subject_number': subject_number, 'lesson_number': lesson_number}
+        )
         request = self.request_factory.get(subject_url)
         view = SubjectMaterialDetailView.as_view()
-        response = view(request, pk=subject.pk)
+        response = view(request, subject_number=subject_number, lesson_number=lesson_number)
         expected_response = {
             'topic': image_material.topic,
             'images': [
@@ -75,26 +92,35 @@ class SubjectMaterialDetailViewTest(TestViewSetUp):
         }
         self.assertEqual(response.data, expected_response)
 
+    # @override_settings(DEBUG=True)
     def test_subject_detail_view_returns_assignmentmaterial_response(self):
-        assignment = AssignmentMaterial.objects.first()
-        subject = assignment.subject
-        subject_url = reverse('subject-material-detail', kwargs={'pk': subject.pk})
+        assignment_material = AssignmentMaterial.objects.select_related('subject', 'subject__lesson').first()
+        subject_number = assignment_material.subject.number
+        lesson_number = assignment_material.subject.lesson.number
+        subject_url = reverse(
+            'subject-material-detail',
+            kwargs={'subject_number': subject_number, 'lesson_number': lesson_number}
+        )
         request = self.request_factory.get(subject_url)
         view = SubjectMaterialDetailView.as_view()
-        response = view(request, pk=subject.pk)
+        response = view(request, subject_number=subject_number, lesson_number=lesson_number)
         expected_response = {
-            'topic': assignment.topic,
-            'task': assignment.task,
+            'topic': assignment_material.topic,
+            'task': assignment_material.task,
         }
         self.assertEqual(response.data, expected_response)
 
     def test_subject_detail_view_returns_quizmaterial_response(self):
-        quiz_material = QuizMaterial.objects.first()
-        subject = quiz_material.subject
-        subject_url = reverse('subject-material-detail', kwargs={'pk': subject.pk})
+        quiz_material = QuizMaterial.objects.select_related('subject', 'subject__lesson').first()
+        subject_number = quiz_material.subject.number
+        lesson_number = quiz_material.subject.lesson.number
+        subject_url = reverse(
+            'subject-material-detail',
+            kwargs={'subject_number': subject_number, 'lesson_number': lesson_number}
+        )
         request = self.request_factory.get(subject_url)
         view = SubjectMaterialDetailView.as_view()
-        response = view(request, pk=subject.pk)
+        response = view(request, subject_number=subject_number, lesson_number=lesson_number)
         expected_response = {
             'topic': quiz_material.topic,
             'tasks': [
@@ -108,11 +134,16 @@ class SubjectMaterialDetailViewTest(TestViewSetUp):
         self.assertEqual(response.data, expected_response)
 
     def test_subject_detail_view_returns_not_found_when_subject_without_material(self):
-        subject = Subject.objects.get(title='Empty subject')
-        subject_url = reverse('subject-material-detail', kwargs={'pk': subject.pk})
+        subject = Subject.objects.select_related('lesson').get(title='Empty subject')
+        subject_number = subject.number
+        lesson_number = subject.lesson.number
+        subject_url = reverse(
+            'subject-material-detail',
+            kwargs={'subject_number': subject_number, 'lesson_number': lesson_number}
+        )
         request = self.request_factory.get(subject_url)
         view = SubjectMaterialDetailView.as_view()
-        response = view(request, pk=subject.pk)
+        response = view(request, subject_number=subject_number, lesson_number=lesson_number)
         self.assertEqual(response.status_code, HTTP_404_NOT_FOUND)
 
 
