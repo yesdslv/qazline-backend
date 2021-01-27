@@ -157,35 +157,40 @@ class Task(models.Model):
     def _define_task_type(self):
         answers = self.answers
         question = self.question
-        n_true_answer = 0
-        n_values = 0
+        n_is_correct_values = 0
+        n_is_correct_keys = 0
         for answer in answers:
             if 'correct' in answer:
-                n_values += 1
+                n_is_correct_keys += 1
                 is_correct = answer['correct']
                 if is_correct:
-                    n_true_answer += 1
-        self._is_valid_answers(answers, question, n_values)
-        if n_values == 0:
+                    n_is_correct_values += 1
+        self._is_valid_answers(answers, question, n_is_correct_keys)
+        task_type = self._get_task_type(n_is_correct_keys, n_is_correct_values)
+        return task_type
+
+    @staticmethod
+    def _get_task_type(n_is_correct_keys, n_is_correct_values):
+        if n_is_correct_keys == 0:
             task_type = Task.TaskType.FILL_IN_THE_BLANK
-        elif n_true_answer == 1:
+        elif n_is_correct_values == 1:
             task_type = Task.TaskType.SINGLE_ANSWER
         else:
             task_type = Task.TaskType.MULTIPLE_ANSWERS
         return task_type
 
     @staticmethod
-    def _is_valid_answers(answers, question, n_values):
-        # TODO Refactor check answer
-        if n_values != 0:
-            # Check single choice and multiple choice question
-            if len(answers) != n_values:
-                raise ValidationError({
-                    'answers': 'In single-choice or multiple-choice tasks for not all answers are given correct values'
-                })
-        else:
+    def _is_valid_answers(answers, question, n_is_correct_keys):
+        if n_is_correct_keys == 0:
             n_blank_spec_chars = question.count(FILL_THE_BLANK_SPECIAL_CHARS)
             if n_blank_spec_chars != len(answers):
                 raise ValidationError({
                     'answers': 'Number of answers are different from number of fill the blank special character'
                 })
+        else:
+            # Check single choice and multiple choice question
+            if len(answers) != n_is_correct_keys:
+                raise ValidationError({
+                    'answers': 'In single-choice or multiple-choice tasks for not all answers are given correct values'
+                })
+
