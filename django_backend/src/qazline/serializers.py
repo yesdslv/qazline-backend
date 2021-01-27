@@ -17,8 +17,8 @@ class ReadOnlySubjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Subject
-        fields = ('id', 'number', 'title',)
-        read_only_fields = ('id', 'number', 'title',)
+        fields = ('number', 'title',)
+        read_only_fields = ('number', 'title',)
 
 
 class LessonSerializer(serializers.ModelSerializer):
@@ -86,11 +86,12 @@ class ImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Image
-        fields = ('id', 'image', 'description',)
-        read_only_fields = ('id', 'image', 'description',)
+        fields = ('image', 'description',)
+        read_only_fields = ('image', 'description',)
 
 
 class ImageMaterialSerializer(MaterialSerializer):
+
     images = serializers.ListField(
         child=serializers.ImageField(allow_empty_file=False), write_only=True,
     )
@@ -107,8 +108,7 @@ class ImageMaterialSerializer(MaterialSerializer):
         images = validated_data.pop('images')
         descriptions = validated_data.pop('descriptions')
         instance = ImageMaterial.objects.create(**validated_data)
-        for image, description in zip(images, descriptions):
-            Image.objects.create(image=image, description=description, image_material=instance)
+        self._save_image(images, descriptions, instance)
         return instance
 
     def update(self, instance, validated_data):
