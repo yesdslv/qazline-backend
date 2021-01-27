@@ -8,15 +8,13 @@ from qazline.models import VideoMaterial, ImageMaterial, AssignmentMaterial, Qui
 
 def _delete_file(path):
     """ Deletes file from filesystem. """
-    if os.path.isfile(path):
+    if os.path.isfile(path):    # pragma: no cover
         os.remove(path)
 
 
 @receiver(post_delete, sender=Image)
 def delete_file(sender, instance, *args, **kwargs):
-    # TODO Check if this condition is needed
-    if instance.image:
-        _delete_file(instance.image.path)
+    _delete_file(instance.image.path)  # pragma: no cover
 
 
 def delete_related_material(sender, instance, **kwargs):
