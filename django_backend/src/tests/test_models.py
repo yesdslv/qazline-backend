@@ -1,11 +1,10 @@
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.db import IntegrityError
-from django.test.utils import override_settings
 from mock import Mock
 
 from qazline.models import (
-    Subject, VideoMaterial, ImageMaterial, AssignmentMaterial, QuizMaterial, Image, Task
+    Subject, VideoMaterial, ImageMaterial, AssignmentMaterial, QuizMaterial, Image, Task, Lesson,
 )
 from tests.setup import TestModelSetUp
 
@@ -30,7 +29,6 @@ class ModelsTest(TestModelSetUp):
         with self.assertRaises(Subject.DoesNotExist):
             Subject.objects.get(title='deleted subject title')
 
-    @override_settings(DEBUG=True)
     def test_create_fill_the_blank_task(self):
         last_subject_number = Subject.objects.order_by('-number').first().number + 1
         subject = Subject.objects.create(number=last_subject_number, title='task title')
@@ -42,14 +40,6 @@ class ModelsTest(TestModelSetUp):
         )
         self.assertIsNotNone(task.pk)
         self.assertEqual(task.task_type, Task.TaskType.FILL_IN_THE_BLANK)
-
-    def test_assert_error_single_answer_task(self):
-        # TODO write test for repeated answer_text in answers
-        #  {'answers': [
-        #    {'answer_text': 'John', 'correct': True},
-        #    {'answer_text': 'John', 'correct': True},
-        #  ]},
-        pass
 
     def test_create_single_answer_task(self):
         last_subject_number = Subject.objects.order_by('-number').first().number + 1
@@ -111,3 +101,13 @@ class ModelsTest(TestModelSetUp):
                 ],
                 quiz_material=quiz_material,
             )
+
+    def test_delete_material_will_delete_subject(self):
+        lesson = Lesson.objects.order_by('?').first()
+        subject = Subject.objects.create(
+            number=1234, lesson=lesson, title='Sample title'
+        )
+        material = AssignmentMaterial.objects.create(topic='assignment', subject=subject)
+        material.delete()
+        with self.assertRaises(Subject.DoesNotExist):
+            self.assertIsNone(Subject.objects.get(number=1234, lesson=lesson, title='Sample title'))
