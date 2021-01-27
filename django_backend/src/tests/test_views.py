@@ -173,6 +173,25 @@ class ViewsTest(TestViewSetUp):
         self.assertEqual(response.status_code, HTTP_201_CREATED, msg='Video is not posted')
         self.assertIsNotNone(subject, msg='Subject is not created')
 
+    def test_video_view_returns_bad_request_on_assigning_to_non_existent_lesson(self):
+        subject_title = 'Video subject'
+        subject_number = self.get_last_subject_number()
+        url = 'https://youtube.com/aaaa'
+        topic = 'AAAAA'
+        lesson_pk = 9999999999
+        video_json = json.dumps({
+            'lesson': lesson_pk,
+            'subject_title': subject_title,
+            'subject_number': subject_number,
+            'url': url,
+            'topic': topic,
+        })
+        video_url = reverse('video-material-list')
+        request = self.request_factory.post(video_url, video_json, content_type='application/json')
+        view = VideoMaterialViewSet.as_view({'post': 'create'})
+        response = view(request)
+        self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST, msg='Video is not posted')
+
     def test_video_updates_subject_title_of_video_material(self):
         patched_subject_title = 'New subject title'
         video = VideoMaterial.objects.get(url='http://sample_video.com')
@@ -317,7 +336,7 @@ class ViewsTest(TestViewSetUp):
         task = 'Sample task'
         lesson_pk = Lesson.objects.first().pk
         request_json = json.dumps({
-            '' 'lesson': lesson_pk,
+            'lesson': lesson_pk,
             'subject_title': subject_title,
             'subject_number': subject_number,
             'topic': topic,
