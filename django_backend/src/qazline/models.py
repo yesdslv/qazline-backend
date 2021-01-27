@@ -64,6 +64,7 @@ class QazlineUser(AbstractBaseUser, PermissionsMixin):
 class Lesson(models.Model):
     number = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=50)
+    objects = models.Manager()
 
     def __str__(self):
         return f'#{self.number}: {self.title}'  # pragma: no cover
