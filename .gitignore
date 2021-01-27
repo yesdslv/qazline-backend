@@ -7,6 +7,8 @@ venv
 
 test_media/
 
+media
+
 __pycache__/
 *.py[cod]
 
