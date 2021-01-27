@@ -24,6 +24,7 @@ class TestViewSetUp(APITestCase):
         updated_video_subject = Subject.objects.create(number=4, lesson=lesson, title='Updated video subject')
         updated_image_subject = Subject.objects.create(number=5, lesson=lesson, title='Updated image subject')
         quiz_subject = Subject.objects.create(number=6, lesson=lesson, title='Quiz subject')
+        Subject.objects.create(number=7, lesson=lesson, title='Empty subject')
         AssignmentMaterial.objects.create(subject=assignment_subject, task='sample task')
         VideoMaterial.objects.create(subject=video_subject, url='http://sample_video.com')
         VideoMaterial.objects.create(subject=updated_video_subject, url='http://updated_video.com')
@@ -33,9 +34,9 @@ class TestViewSetUp(APITestCase):
             content_type='image/jpeg'
         )
         image_material = ImageMaterial.objects.create(subject=image_subject, topic='Put image topic')
-        Image.objects.create(image=image_file, description='Image descritpion', image_material=image_material)
+        Image.objects.create(image=image_file, description='Image description', image_material=image_material)
         image_material = ImageMaterial.objects.create(subject=updated_image_subject, topic='Update image subject')
-        Image.objects.create(image=image_file, description='Image descritpion', image_material=image_material)
+        Image.objects.create(image=image_file, description='Image description', image_material=image_material)
         quiz_material = QuizMaterial.objects.create(subject=quiz_subject, topic='Add task')
         Task.objects.create(
             question='Hello my name is',
@@ -50,7 +51,6 @@ class TestViewSetUp(APITestCase):
     def tearDown(self):
         super().tearDown()
         shutil.rmtree(MEDIA_ROOT)
-
 
     @classmethod
     def get_last_subject_number(cls) -> int:
