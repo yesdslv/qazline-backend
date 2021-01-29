@@ -10,15 +10,15 @@ class SubjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Subject
-        fields = ('number', 'title', 'lesson')
+        fields = ('numeral', 'title', 'lesson')
 
 
 class ReadOnlySubjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Subject
-        fields = ('number', 'title',)
-        read_only_fields = ('number', 'title',)
+        fields = ('numeral', 'title',)
+        read_only_fields = ('numeral', 'title',)
 
 
 class LessonSerializer(serializers.ModelSerializer):
@@ -27,25 +27,25 @@ class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
         fields = (
-            'number', 'title', 'subjects',
+            'numeral', 'title', 'subjects',
         )
 
 
 class MaterialSerializer(serializers.ModelSerializer):
     subject_title = serializers.CharField(max_length=50, write_only=True)
     lesson = serializers.IntegerField(write_only=True)
-    subject_number = serializers.IntegerField(write_only=True)
+    subject_numeral = serializers.IntegerField(write_only=True)
 
     class Meta:
         abstract = True
         model = Material
-        fields = ('lesson', 'subject_number', 'subject_title', 'topic',)
+        fields = ('lesson', 'subject_numeral', 'subject_title', 'topic',)
 
     def create(self, validated_data):
         subject_title = validated_data.pop('subject_title')
-        subject_number = validated_data.pop('subject_number')
+        subject_numeral = validated_data.pop('subject_numeral')
         lesson_id = validated_data.pop('lesson')
-        subject = Subject.objects.create(number=subject_number, title=subject_title, lesson_id=lesson_id)
+        subject = Subject.objects.create(numeral=subject_numeral, title=subject_title, lesson_id=lesson_id)
         validated_data['subject'] = subject
 
     def update(self, instance, validated_data):
@@ -61,12 +61,12 @@ class MaterialSerializer(serializers.ModelSerializer):
     @staticmethod
     def _update_subject(instance, validated_data):
         subject_title = validated_data.pop('subject_title', None)
-        subject_number = validated_data.pop('subject_number', None)
+        subject_numeral = validated_data.pop('subject_numeral', None)
         lesson_id = validated_data.pop('lesson', None)
         subject = instance.subject
-        if subject_number:
-            subject.number = subject_number
-            subject.save(update_fields=['number'])
+        if subject_numeral:
+            subject.numeral = subject_numeral
+            subject.save(update_fields=['numeral'])
         if subject_title:
             subject.title = subject_title
             subject.save(update_fields=['title'])

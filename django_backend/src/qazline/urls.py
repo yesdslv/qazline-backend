@@ -32,7 +32,7 @@ urlpatterns = [
     path('tasks/<int:pk>/', TaskRetrieveUpdateDestroyView.as_view(), name='task-detail'),
     path('subjects/', SubjectListView.as_view(), name='subject-list'),
     path(
-        'lessons/<int:lesson_number>/subjects/<int:subject_number>/',
+        'lessons/<int:lesson_numeral>/subjects/<int:subject_numeral>/',
         SubjectMaterialDetailView.as_view(), name='subject-material-detail'
     ),
 ] + router.urls

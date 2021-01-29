@@ -25,8 +25,8 @@ class SubjectMaterialDetailView(RetrieveDestroyAPIView):
     def get_object(self):
         instance = get_object_or_404(
             Subject,
-            lesson__number=self.kwargs['lesson_number'],
-            number=self.kwargs['subject_number'],
+            lesson__numeral=self.kwargs['lesson_numeral'],
+            numeral=self.kwargs['subject_numeral'],
         )
         if instance.has_video_material():
             obj = instance.videomaterial
@@ -45,8 +45,8 @@ class SubjectMaterialDetailView(RetrieveDestroyAPIView):
         # TODO override get_serializer instead of get_serializer_class
         instance = get_object_or_404(
             Subject,
-            lesson__number=self.kwargs['lesson_number'],
-            number=self.kwargs['subject_number'],
+            lesson__numeral=self.kwargs['lesson_numeral'],
+            numeral=self.kwargs['subject_numeral'],
         )
         if instance.has_video_material():
             serializer = VideoMaterialSerializer

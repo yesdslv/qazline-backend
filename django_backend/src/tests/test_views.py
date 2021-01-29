@@ -30,39 +30,39 @@ class SubjectMaterialViewsTest(TestViewSetUp):
 
     def test_subject_detail_view_returns_200_response(self):
         subject = Subject.objects.select_related('lesson').get(title='Assignment subject')
-        subject_number = subject.number
-        lesson_number = subject.lesson.number
+        subject_numeral = subject.numeral
+        lesson_numeral = subject.lesson.numeral
         subject_url = reverse(
             'subject-material-detail',
-            kwargs={'subject_number': subject_number, 'lesson_number': lesson_number}
+            kwargs={'subject_numeral': subject_numeral, 'lesson_numeral': lesson_numeral}
         )
         request = self.request_factory.get(subject_url)
         view = SubjectListView.as_view()
-        response = view(request, subject_number=subject_number, lesson_number=lesson_number)
+        response = view(request, subject_numeral=subject_numeral, lesson_numeral=lesson_numeral)
         self.assertEqual(response.status_code, HTTP_200_OK)
 
     def test_subject_detail_view_not_found_response(self):
-        number = 9999999999999999999
+        numeral = 9999999999999999999
         subject_url = reverse(
             'subject-material-detail',
-            kwargs={'subject_number': number, 'lesson_number': number}
+            kwargs={'subject_numeral': numeral, 'lesson_numeral': numeral}
         )
         request = self.request_factory.get(subject_url)
         view = SubjectMaterialDetailView.as_view()
-        response = view(request, subject_number=number, lesson_number=number)
+        response = view(request, subject_numeral=numeral, lesson_numeral=numeral)
         self.assertEqual(response.status_code, HTTP_404_NOT_FOUND)
 
     def test_subject_detail_view_returns_videomaterial_response(self):
         video_material = VideoMaterial.objects.select_related('subject', 'subject__lesson').first()
-        subject_number = video_material.subject.number
-        lesson_number = video_material.subject.lesson.number
+        subject_numeral = video_material.subject.numeral
+        lesson_numeral = video_material.subject.lesson.numeral
         subject_url = reverse(
             'subject-material-detail',
-            kwargs={'subject_number': subject_number, 'lesson_number': lesson_number}
+            kwargs={'subject_numeral': subject_numeral, 'lesson_numeral': lesson_numeral}
         )
         request = self.request_factory.get(subject_url)
         view = SubjectMaterialDetailView.as_view()
-        response = view(request, subject_number=subject_number, lesson_number=lesson_number)
+        response = view(request, subject_numeral=subject_numeral, lesson_numeral=lesson_numeral)
         expected_response = {
             'topic': video_material.topic,
             'url': video_material.url
@@ -71,15 +71,15 @@ class SubjectMaterialViewsTest(TestViewSetUp):
 
     def test_subject_detail_view_returns_imagematerial_response(self):
         image_material = ImageMaterial.objects.select_related('subject', 'subject__lesson').first()
-        subject_number = image_material.subject.number
-        lesson_number = image_material.subject.lesson.number
+        subject_numeral = image_material.subject.numeral
+        lesson_numeral = image_material.subject.lesson.numeral
         subject_url = reverse(
             'subject-material-detail',
-            kwargs={'subject_number': subject_number, 'lesson_number': lesson_number}
+            kwargs={'subject_numeral': subject_numeral, 'lesson_numeral': lesson_numeral}
         )
         request = self.request_factory.get(subject_url)
         view = SubjectMaterialDetailView.as_view()
-        response = view(request, subject_number=subject_number, lesson_number=lesson_number)
+        response = view(request, subject_numeral=subject_numeral, lesson_numeral=lesson_numeral)
         expected_response = {
             'topic': image_material.topic,
             'images': [
@@ -95,15 +95,15 @@ class SubjectMaterialViewsTest(TestViewSetUp):
     # @override_settings(DEBUG=True)
     def test_subject_detail_view_returns_assignmentmaterial_response(self):
         assignment_material = AssignmentMaterial.objects.select_related('subject', 'subject__lesson').first()
-        subject_number = assignment_material.subject.number
-        lesson_number = assignment_material.subject.lesson.number
+        subject_numeral = assignment_material.subject.numeral
+        lesson_numeral = assignment_material.subject.lesson.numeral
         subject_url = reverse(
             'subject-material-detail',
-            kwargs={'subject_number': subject_number, 'lesson_number': lesson_number}
+            kwargs={'subject_numeral': subject_numeral, 'lesson_numeral': lesson_numeral}
         )
         request = self.request_factory.get(subject_url)
         view = SubjectMaterialDetailView.as_view()
-        response = view(request, subject_number=subject_number, lesson_number=lesson_number)
+        response = view(request, subject_numeral=subject_numeral, lesson_numeral=lesson_numeral)
         expected_response = {
             'topic': assignment_material.topic,
             'task': assignment_material.task,
@@ -112,15 +112,15 @@ class SubjectMaterialViewsTest(TestViewSetUp):
 
     def test_subject_detail_view_returns_quizmaterial_response(self):
         quiz_material = QuizMaterial.objects.select_related('subject', 'subject__lesson').first()
-        subject_number = quiz_material.subject.number
-        lesson_number = quiz_material.subject.lesson.number
+        subject_numeral = quiz_material.subject.numeral
+        lesson_numeral = quiz_material.subject.lesson.numeral
         subject_url = reverse(
             'subject-material-detail',
-            kwargs={'subject_number': subject_number, 'lesson_number': lesson_number}
+            kwargs={'subject_numeral': subject_numeral, 'lesson_numeral': lesson_numeral}
         )
         request = self.request_factory.get(subject_url)
         view = SubjectMaterialDetailView.as_view()
-        response = view(request, subject_number=subject_number, lesson_number=lesson_number)
+        response = view(request, subject_numeral=subject_numeral, lesson_numeral=lesson_numeral)
         expected_response = {
             'topic': quiz_material.topic,
             'tasks': [
@@ -135,15 +135,15 @@ class SubjectMaterialViewsTest(TestViewSetUp):
 
     def test_subject_detail_view_returns_not_found_when_subject_without_material(self):
         subject = Subject.objects.select_related('lesson').get(title='Empty subject')
-        subject_number = subject.number
-        lesson_number = subject.lesson.number
+        subject_numeral = subject.numeral
+        lesson_numeral = subject.lesson.numeral
         subject_url = reverse(
             'subject-material-detail',
-            kwargs={'subject_number': subject_number, 'lesson_number': lesson_number}
+            kwargs={'subject_numeral': subject_numeral, 'lesson_numeral': lesson_numeral}
         )
         request = self.request_factory.get(subject_url)
         view = SubjectMaterialDetailView.as_view()
-        response = view(request, subject_number=subject_number, lesson_number=lesson_number)
+        response = view(request, subject_numeral=subject_numeral, lesson_numeral=lesson_numeral)
         self.assertEqual(response.status_code, HTTP_404_NOT_FOUND)
 
 
@@ -153,14 +153,14 @@ class ViewsTest(TestViewSetUp):
 
     def test_video_view_creates_video_material(self):
         subject_title = 'Video subject'
-        subject_number = self.get_last_subject_number()
+        subject_numeral = self.get_last_subject_numeral()
         url = 'https://youtube.com/aaaa'
         topic = 'AAAAA'
         lesson_pk = Lesson.objects.first().pk
         video_json = json.dumps({
             'lesson': lesson_pk,
             'subject_title': subject_title,
-            'subject_number': subject_number,
+            'subject_numeral': subject_numeral,
             'url': url,
             'topic': topic,
         })
@@ -175,14 +175,14 @@ class ViewsTest(TestViewSetUp):
 
     def test_video_view_returns_bad_request_on_assigning_to_non_existent_lesson(self):
         subject_title = 'Video subject'
-        subject_number = self.get_last_subject_number()
+        subject_numeral = self.get_last_subject_numeral()
         url = 'https://youtube.com/aaaa'
         topic = 'AAAAA'
         lesson_pk = 9999999999
         video_json = json.dumps({
             'lesson': lesson_pk,
             'subject_title': subject_title,
-            'subject_number': subject_number,
+            'subject_numeral': subject_numeral,
             'url': url,
             'topic': topic,
         })
@@ -240,7 +240,7 @@ class ViewsTest(TestViewSetUp):
 
     def test_image_view_creates_image_material_with_one_image(self):
         subject_title ='Image subject'
-        subject_number = self.get_last_subject_number()
+        subject_numeral = self.get_last_subject_numeral()
         topic = 'just topic'
         image = SimpleUploadedFile(
             name='test_image.jpg',
@@ -252,7 +252,7 @@ class ViewsTest(TestViewSetUp):
         request_dict = {
             'lesson': lesson_pk,
             'subject_title': subject_title,
-            'subject_number': subject_number,
+            'subject_numeral': subject_numeral,
             'topic': topic,
             'images': image,
             'descriptions': image_description,
@@ -265,7 +265,7 @@ class ViewsTest(TestViewSetUp):
 
     def test_image_view_creates_image_material_with_multiple_images(self):
         subject_title = 'Image subject'
-        subject_number = self.get_last_subject_number()
+        subject_numeral = self.get_last_subject_numeral()
         topic = 'just topic'
         images = []
         descriptions = []
@@ -281,7 +281,7 @@ class ViewsTest(TestViewSetUp):
         request_dict = {
             'lesson': lesson_pk,
             'subject_title': subject_title,
-            'subject_number': subject_number,
+            'subject_numeral': subject_numeral,
             'topic': topic,
             'images': images,
             'descriptions': descriptions
@@ -331,14 +331,14 @@ class ViewsTest(TestViewSetUp):
 
     def test_assignment_view_creates_assignment_material(self):
         subject_title = 'Assignment subject'
-        subject_number = self.get_last_subject_number()
+        subject_numeral = self.get_last_subject_numeral()
         topic = 'Topic'
         task = 'Sample task'
         lesson_pk = Lesson.objects.first().pk
         request_json = json.dumps({
             'lesson': lesson_pk,
             'subject_title': subject_title,
-            'subject_number': subject_number,
+            'subject_numeral': subject_numeral,
             'topic': topic,
             'task': task,
         })
@@ -379,13 +379,13 @@ class ViewsTest(TestViewSetUp):
 
     def test_quiz_view_creates_quiz_material_with_different_tasks(self):
         subject_title = 'Quiz subject'
-        subject_number = self.get_last_subject_number()
+        subject_numeral = self.get_last_subject_numeral()
         lesson_pk = Lesson.objects.first().pk
         topic = 'just topic'
         quiz_dict = {
             'lesson': lesson_pk,
             'subject_title': subject_title,
-            'subject_number': subject_number,
+            'subject_numeral': subject_numeral,
             'topic': topic,
             'tasks': [],
         }
@@ -480,13 +480,13 @@ class ViewsTest(TestViewSetUp):
 
     def test_quiz_view_raise_validation_error_on_invalid_answers_schema(self):
         subject_title = 'Quiz subject'
-        subject_number = self.get_last_subject_number()
+        subject_numeral = self.get_last_subject_numeral()
         lesson_pk = Lesson.objects.first().pk
         topic = 'just topic'
         quiz_dict = {
             'lesson': lesson_pk,
             'subject_title': subject_title,
-            'subject_number': subject_number,
+            'subject_numeral': subject_numeral,
             'topic': topic,
             'tasks': [],
         }

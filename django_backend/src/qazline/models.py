@@ -62,22 +62,22 @@ class QazlineUser(AbstractBaseUser, PermissionsMixin):
 
 
 class Lesson(models.Model):
-    number = models.IntegerField(primary_key=True)
+    numeral = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=50)
     objects = models.Manager()
 
     def __str__(self):
-        return f'#{self.number}: {self.title}'  # pragma: no cover
+        return f'#{self.numeral}: {self.title}'  # pragma: no cover
 
 
 class Subject(models.Model):
-    number = models.IntegerField()
+    numeral = models.IntegerField()
     lesson = models.ForeignKey(Lesson, null=True, on_delete=models.SET_NULL, related_name='subjects')
     title = models.CharField(max_length=50)
     objects = models.Manager()
 
     class Meta:
-        unique_together = ('number', 'lesson',)
+        unique_together = ('numeral', 'lesson',)
 
     def __str__(self):
         return f'{self.title}'
